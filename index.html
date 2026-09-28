@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6f4ef">
+<title>Тест PAEI по Адизесу</title>
+<style>
+:root{
+  --bg:#f6f4ef; --card:#ffffff; --ink:#1d1c1a; --muted:#6b675f; --line:#e3dfd6; --soft:#efece5;
+  --accent:#1d1c1a; --accent-ink:#ffffff;
+  --P:#d0453f; --A:#2f66a3; --E:#c98e00; --I:#2f8f5d;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#16161a; --card:#202026; --ink:#f1efe9; --muted:#a19d95; --line:#34343c; --soft:#2a2a31;
+    --accent:#f1efe9; --accent-ink:#16161a;
+    --P:#ef6b66; --A:#6b9fd6; --E:#f2c14e; --I:#5cc28b;
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+.wrap{max-width:680px;margin:0 auto;padding:20px 16px calc(120px + env(safe-area-inset-bottom))}
+h1{font-size:26px;line-height:1.15;margin:0 0 8px;letter-spacing:-.01em}
+h2{font-size:19px;line-height:1.25;margin:0 0 12px}
+h3{font-size:16px;margin:0 0 6px}
+p{margin:0 0 12px}
+ul{margin:4px 0 12px;padding-left:20px}
+li{margin:3px 0}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:0 0 14px}
+.btn{appearance:none;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:600;min-height:48px;padding:12px 20px;border-radius:12px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.block{width:100%}
+
+/* верхняя панель прогресса */
+.top{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 8px;margin:-20px 0 10px}
+.top .meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px}
+.progress{height:6px;background:var(--line);border-radius:6px;overflow:hidden}
+.progress>div{height:100%;background:var(--ink);transition:width .25s}
+
+/* нижняя панель навигации */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--bg);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+.nav .in{max-width:680px;margin:0 auto;display:flex;gap:10px}
+.nav .btn{flex:1}
+.nav .btn.ghost{flex:0 0 auto}
+
+/* варианты ответа */
+.hint{font-size:14px;color:var(--muted);margin:0 0 12px}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px;margin:0 0 10px;cursor:pointer;min-height:56px;transition:border-color .15s,background .15s}
+.opt .badge{flex:none;width:32px;height:32px;border-radius:50%;border:1.5px dashed var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:var(--muted);font-variant-numeric:tabular-nums}
+.opt .txt{flex:1;padding-top:4px}
+.opt .lbl{display:block;font-size:12px;color:var(--muted);margin-top:4px}
+.opt.r1{border-color:var(--ink);background:var(--soft)}
+.opt.r1 .badge{background:var(--ink);border:none;color:var(--bg)}
+.opt.r2 .badge{border:1.5px solid var(--ink);color:var(--ink)}
+.opt.r3 .badge, .opt.r4 .badge{border-style:solid;color:var(--ink)}
+.opt.r4{opacity:.75}
+.reset{appearance:none;background:none;border:none;color:var(--muted);font:inherit;font-size:14px;text-decoration:underline;padding:8px 0;cursor:pointer}
+
+/* результаты */
+.code{font-size:52px;font-weight:800;letter-spacing:.08em;line-height:1;margin:6px 0 12px;font-variant-numeric:tabular-nums}
+.bars{display:grid;gap:12px;margin:10px 0 6px}
+.bar .top2{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px}
+.bar .track{height:12px;background:var(--line);border-radius:6px;position:relative;overflow:hidden}
+.bar .fill{height:100%;border-radius:6px}
+.bar .mark{position:absolute;top:0;bottom:0;width:2px;background:var(--ink);opacity:.35}
+.matrix{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:14px}
+.matrix .row{grid-column:1 / -1;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em;margin-top:6px}
+.matrix .h{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em;align-self:end;padding:0 2px;line-height:1.2}
+.matrix .c{border-radius:12px;padding:10px;border:1.5px solid var(--line);min-width:0;-webkit-hyphens:auto;hyphens:auto;overflow-wrap:break-word}
+
+.matrix .c b{font-size:18px}
+.role{border-left:4px solid var(--line);padding:2px 0 2px 12px;margin:0 0 16px}
+.role:last-child{margin-bottom:0}
+.q{font-style:italic;color:var(--muted)}
+.cf{border:1.5px solid var(--line);border-radius:14px;padding:14px;margin:0 0 10px}
+.cf.main{border-color:var(--ink)}
+.cf .tag{display:inline-block;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:6px}
+.cf .ltr{display:inline-flex;width:26px;height:26px;border-radius:50%;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;vertical-align:middle}
+.cf h3{margin:8px 0 4px}
+.cf .ln{display:flex;gap:8px;font-size:14px;margin:4px 0}
+.cf .ln i{font-style:normal;flex:none;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;margin-top:2px}
+.cf .mn i{background:var(--P);color:#fff}
+.cf .pl i{background:var(--I);color:#fff}
+.cf .qt{border-left:3px solid var(--line);padding-left:10px;font-size:14px;margin:8px 0 0}
+.how{background:var(--soft);border-radius:14px;padding:14px;margin-top:4px}
+.how ul{margin:6px 0 0}
+.pair{padding:10px 0;border-top:1px solid var(--line)}
+.pair:first-child{border-top:0;padding-top:0}
+.src{font-size:13px;color:var(--muted)}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));max-width:480px;margin:0 auto;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;text-align:center}
+.toast.on{opacity:1}
+@media (max-width:380px){
+  h1{font-size:23px}
+  .code{font-size:42px}
+  .card{padding:14px}
+}
+@media print{
+  .nav,.top,.noprint{display:none!important}
+  body{background:#fff;color:#000}
+  .wrap{padding-bottom:0}
+  .card{break-inside:avoid;border-color:#ccc}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="nav" id="nav"><div class="in" id="navin"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* =========================================================
+   Источники:
+   — И. Адизес «Идеальный руководитель. Почему им нельзя стать
+     и что из этого следует» (The Ideal Executive, 2004), гл. 2–4, 9;
+   — формат официального опросника Adizes Management Style
+     Indicator: 20 вопросов × 4 утверждения, ранжирование
+     с весами 8 / 4 / 2 / 1 (Kordova & Hirschprung, PLOS One, 2025);
+   — adizes.com/management_styles.
+   Это учебная адаптация, а не официальный опросник.
+   ========================================================= */
+
+var ORDER = ["P","A","E","I"];
+var W = [8,4,2,1];                  // веса мест 1–4, как в официальном опроснике
+var MIN = 20, MAX = 160, AVG = 75;  // диапазон балла по роли при 20 вопросах
+var HIGH = 95, LOW = 50;            // ≥95 — заглавная, 51–94 — строчная, ≤50 — «–»
+
+var ROLES = {
+  P:{name:"Производитель", en:"Producer", color:"var(--P)",
+     q:"Что делать?",
+     func:"Производит результаты, ради которых существует команда: удовлетворяет потребности клиента. Обеспечивает результативность в краткосрочной перспективе.",
+     complaint:"«День слишком короток»",
+     plus:["доводит дело до конца, держит дедлайны","быстро действует, понятен и конкретен","берёт на себя трудные задачи"],
+     minus:["делает сам вместо того, чтобы делегировать","торопит, не любит обсуждений и «может быть»","меряет успех интенсивностью работы → выгорание"],
+     talk:"Коротко и по делу: что нужно сделать, к какому сроку. Без долгих вступлений.",
+     hires:"мальчиков на побегушках — исполнителей, которые ждут поручений"},
+  A:{name:"Администратор", en:"Administrator", color:"var(--A)",
+     q:"Как делать?",
+     func:"Следит, чтобы команда делала правильные вещи в правильной последовательности и с правильной интенсивностью. Обеспечивает эффективность в краткосрочной перспективе.",
+     complaint:"«Это делается не так, как положено»",
+     plus:["порядок, процессы, предсказуемость","внимание к деталям и точность","память команды: договорённости, сроки, документы"],
+     minus:["«лучше делать дело правильно, чем делать правильное дело»","видит затраты, но не видит ценности","сопротивляется изменениям и риску"],
+     talk:"Точно и последовательно, с фактами и деталями. Дайте время подумать и не меняйте договорённости на ходу.",
+     hires:"соглашателей — аккуратных людей, которые не раскачивают лодку"},
+  E:{name:"Предприниматель", en:"Entrepreneur", color:"var(--E)",
+     q:"Зачем делать?",
+     func:"Определяет направление: сочетает творческий подход и готовность рисковать, действует на опережение в условиях изменений. Обеспечивает результативность в долгосрочной перспективе.",
+     complaint:"«Самые приоритетные вопросы остаются без внимания»",
+     plus:["видит возможности и картину целиком","генерирует идеи, вдохновляет","не боится риска и перемен"],
+     minus:["игнорирует детали и стоимость","меняет курс, не доведя начатое","хуже всех слушает других"],
+     talk:"Начните с общей идеи и смысла, а не с деталей. Дайте ему «присвоить» идею — предлагайте, а не утверждайте.",
+     hires:"клакеров — тех, кто аплодирует его идеям"},
+  I:{name:"Интегратор", en:"Integrator", color:"var(--I)",
+     q:"С кем делать?",
+     func:"Создаёт атмосферу и ценности, которые побуждают людей действовать сообща и не дают никому стать незаменимым. Обеспечивает эффективность в долгосрочной перспективе.",
+     complaint:"«Никто не понял, что я имел в виду на самом деле»",
+     plus:["доверие и климат в команде","чувствует людей и подводные течения","сглаживает конфликты, объединяет"],
+     minus:["оттягивает решения ради консенсуса","избегает жёстких позиций","согласие может оказаться лишь видимостью"],
+     talk:"Начните с людей: кого это затронет и что о решении думают другие. Не давите — дайте ему время узнать позиции.",
+     hires:"осведомителей — людей с политическим чутьём"}
+};
+
+/* Стили неправильного менеджмента (Адизес, гл. 4). Названия — по русскому изданию. */
+var MIS = {
+  P:{code:"P---", name:"Герой-одиночка", alt:"в других переводах — Одинокий рейнджер",
+     text:"Приходит первым, уходит последним, стол завален, делегирует, «когда уже поздно». Постоянно в кризисе, поэтому второе прозвище — Пожарник."},
+  A:{code:"-A--", name:"Бюрократ", alt:"",
+     text:"Форма важнее функции: отчёты безупречны, даже если компания движется не туда. На любое новое предложение отвечает «нет», не дослушав."},
+  E:{code:"--E-", name:"Поджигатель", alt:"",
+     text:"Утро понедельника опасно: за выходные появились новые приоритеты. Начинает много, доводит мало; команда устаёт от смены курса."},
+  I:{code:"---I", name:"Горячий сторонник", alt:"в других переводах — Суперпоследователь",
+     text:"Не ведёт, а следует: выясняет, откуда дует ветер, и присоединяется к большинству. Может «привести к краю пропасти счастливыми и довольными»."}
+};
+
+/* Конфликты между стилями: четыре пары — по слайду курса «Когда типы конфликтуют»,
+   P–E и A–I — дописаны в той же логике по гл. 3 книги Адизеса. */
+var CONFLICTS = {
+  "PA":{t:"Результат vs. порядок", d:"P хочет двигаться быстро, A требует структуры и контроля.",
+        P:"P кажется, что A тормозит.", A:"A считает, что P действует слишком хаотично.",
+        w:"скорость + надёжность", q:"Идеи двигают вперёд, а структура делает их реальными"},
+  "AE":{t:"Контроль vs. свобода", d:"A хочет правил и предсказуемости, E предлагает новые возможности и эксперименты.",
+        A:"A видит в E излишний риск.", E:"E ощущает ограничения и бюрократию.",
+        w:"безопасность + рост", q:"Давайте искать новые возможности в понятных рамках"},
+  "EI":{t:"Экспансия vs. глубина", d:"E генерирует идеи и тянет в новое, I задаёт вопросы и предлагает вдумчивый подход.",
+        E:"E считает, что I слишком медлит.", I:"I видит в E поверхностность.",
+        w:"широта взглядов + глубина анализа", q:"Больше идей и лучшее качество решений"},
+  "PI":{t:"Действие vs. рефлексия", d:"P быстро запускает и пробует, I анализирует и оценивает последствия.",
+        P:"P считает, что I затягивает.", I:"I видит в P невнимание к людям.",
+        w:"скорость + осознанность", q:"Двигаться быстро, но с открытыми глазами"},
+  "PE":{t:"Сегодня vs. завтра", d:"P закрывает текущие задачи, E тянет к новым возможностям и переменам.",
+        P:"P кажется, что E распыляется и мешает доделать начатое.", E:"E видит в P рутину и отсутствие перспективы.",
+        w:"результат + развитие", q:"Делать сегодня то, что приближает завтра"},
+  "AI":{t:"Правила vs. доверие", d:"A опирается на регламенты и процессы, I — на договорённости и отношения.",
+        A:"A считает, что I решает всё «по-человечески», в обход правил.", I:"I видит в A формализм и холодность.",
+        w:"порядок + сплочённость", q:"Правила, в которые команда верит"}
+};
+function conflictOf(x,y){ return CONFLICTS[x+y] || CONFLICTS[y+x]; }
+
+/* 20 вопросов × 4 утверждения. Порядок внутри вопроса перемешан. */
+var ITEMS = [
+  {q:"Когда появляется новая задача, мой первый вопрос —", s:[
+    ["E","«А почему бы не сделать это совсем по-другому?»"],
+    ["P","«Что конкретно нужно сделать и к какому сроку?»"],
+    ["I","«Кто будет этим заниматься и что думает команда?»"],
+    ["A","«Как мы это организуем и по какому порядку?»"]]},
+  {q:"Чаще всего я жалуюсь, что…", s:[
+    ["A","всё делается не так, как положено"],
+    ["I","меня неправильно поняли"],
+    ["P","день слишком короткий и я ничего не успеваю"],
+    ["E","самые важные вещи остаются без внимания"]]},
+  {q:"Одногруппник предлагает изменить привычный порядок работы. Моя первая реакция:", s:[
+    ["I","«Идея хорошая, но давай поймём, готовы ли к этому остальные»"],
+    ["E","«Отличная идея! А ещё можно поменять вот это и это…»"],
+    ["A","«Давай сначала продумаем, как встроить это в наш процесс»"],
+    ["P","«Сейчас некогда, давай после сдачи»"]]},
+  {q:"На командной встрече я…", s:[
+    ["P","хочу быстро договориться и разойтись работать"],
+    ["A","держусь повестки и фиксирую решения"],
+    ["E","перескакиваю с темы на тему, если появилась идея"],
+    ["I","слежу, кто что сказал, кто промолчал и к чему всё идёт"]]},
+  {q:"Когда нужно поручить часть работы другому, я…", s:[
+    ["E","объясняю идею в целом — детали пусть придумают сами"],
+    ["I","распределяю так, чтобы всем было интересно и никто не обиделся"],
+    ["P","чаще делаю сам — так быстрее и надёжнее"],
+    ["A","даю чёткую инструкцию и проверяю выполнение"]]},
+  {q:"Принимая решение, я обычно…", s:[
+    ["A","собираю информацию, пока не буду уверен(а), что не ошибусь"],
+    ["P","решаю быстро: да или нет, без «может быть»"],
+    ["I","ищу вариант, с которым согласятся все"],
+    ["E","полагаюсь на интуицию и готов(а) рискнуть"]]},
+  {q:"В цифрах и деталях для меня важнее всего…", s:[
+    ["P","то, что нужно, чтобы начать действовать"],
+    ["E","порядок величин и общая картина — мелочи потом"],
+    ["A","точность: 999 999 — это ещё не миллион"],
+    ["I","то, как эти цифры скажутся на людях"]]},
+  {q:"Оценивая новый проект, я прежде всего думаю о том…", s:[
+    ["I","кого он затронет и поддержат ли его"],
+    ["A","сколько это будет стоить и какие риски"],
+    ["E","какие возможности он откроет"],
+    ["P","сколько там работы и когда будет результат"]]},
+  {q:"Мой подход к планированию:", s:[
+    ["E","ставлю амбициозные цели, план потом можно поменять"],
+    ["P","план составлю позже — сначала надо разобрать текущие задачи"],
+    ["A","беру то, что уже получалось, и планирую немного лучше"],
+    ["I","план хорош, если о нём договорились все участники"]]},
+  {q:"Моя манера говорить скорее…", s:[
+    ["A","точная и последовательная, по пунктам"],
+    ["I","мягкая: сначала спрашиваю, что думают другие"],
+    ["P","короткая и прямая"],
+    ["E","эмоциональная, со словами «всегда», «никогда», «невероятно»"]]},
+  {q:"Свою работу я считаю успешной, когда…", s:[
+    ["P","много сделано, задачи закрыты"],
+    ["E","удалось запустить что-то новое"],
+    ["I","команда сплочена и все довольны"],
+    ["A","всё под контролем и без ошибок"]]},
+  {q:"В неясной ситуации я…", s:[
+    ["I","жду, пока прояснятся позиции людей"],
+    ["A","хочу увидеть факты своими глазами, прежде чем поверить"],
+    ["E","достраиваю картину по фрагментам — вижу «слона в тумане»"],
+    ["P","чувствую себя неуютно и хочу поскорее определённости"]]},
+  {q:"Когда в команде конфликт, я…", s:[
+    ["E","предлагаю новое решение и азартно его отстаиваю"],
+    ["P","решаю быстро, даже если кому-то это не понравится"],
+    ["A","ищу правило или процедуру, которые его разрешат"],
+    ["I","сглаживаю и ищу компромисс"]]},
+  {q:"В свою команду я бы скорее позвал(а) тех, кто…", s:[
+    ["A","аккуратен и выполняет договорённости"],
+    ["P","готов много и быстро работать"],
+    ["I","приятен в общении и умеет ладить с людьми"],
+    ["E","загорается идеями и поддерживает смелые решения"]]},
+  {q:"Если выдалось свободное время в работе над проектом, я…", s:[
+    ["I","общаюсь с людьми, узнаю, как у кого дела"],
+    ["E","придумываю, что можно сделать иначе"],
+    ["P","ищу, что ещё можно сделать"],
+    ["A","навожу порядок: файлы, таблицы, процессы"]]},
+  {q:"Новое умение я быстрее всего осваиваю, когда…", s:[
+    ["P","сразу пробую его на реальной задаче"],
+    ["A","есть пошаговая инструкция или понятная программа"],
+    ["E","могу экспериментировать и искать свой способ"],
+    ["I","разбираюсь вместе с другими и обсуждаю"]]},
+  {q:"Под сильным давлением я скорее…", s:[
+    ["E","меняю направление и придумываю новый план"],
+    ["P","беру всё на себя и становлюсь резким"],
+    ["A","ужесточаю контроль и проверяю каждую мелочь"],
+    ["I","откладываю решение, пока не договоримся"]]},
+  {q:"Когда мне предлагают новую роль или проект, я первым делом спрашиваю…", s:[
+    ["I","«Кто будет в команде?»"],
+    ["A","«Какие условия, сроки и правила?»"],
+    ["P","«Что конкретно я буду делать?»"],
+    ["E","«Какая цель и какие перспективы?»"]]},
+  {q:"Больше всего меня выматывает…", s:[
+    ["P","долгое обсуждение без результата"],
+    ["I","напряжённая атмосфера и ссоры"],
+    ["E","однообразная работа по шаблону"],
+    ["A","хаос и постоянная смена договорённостей"]]},
+  {q:"Коллеги скорее скажут обо мне:", s:[
+    ["A","«у него/неё всё по полочкам»"],
+    ["E","«генератор идей»"],
+    ["P","«сделает, на него/неё можно положиться»"],
+    ["I","«с ним/ней легко, он(а) всех объединяет»"]]}
+];
+
+/* ---------- состояние ---------- */
+var state = {step:-1, ranks: ITEMS.map(function(){ return []; })}; // ranks[i] = индексы утверждений по порядку выбора
+var app = document.getElementById("app");
+var navin = document.getElementById("navin");
+var nav = document.getElementById("nav");
+
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function done(i){ return state.ranks[i].length===4; }
+
+/* ---------- экран: вступление ---------- */
+function renderIntro(){
+  nav.style.display="";
+  app.innerHTML =
+  '<h1>Какой вы лидер по Адизесу?</h1>'+
+  '<p class="muted">Диагностика стиля PAEI · Работа в команде</p>'+
+  '<div class="card">'+
+    '<p>Ицхак Адизес выделяет четыре функции управления: '+
+    '<b style="color:var(--P)">P</b> — производство результатов, <b style="color:var(--A)">A</b> — администрирование, '+
+    '<b style="color:var(--E)">E</b> — предпринимательство, <b style="color:var(--I)">I</b> — интеграция. '+
+    'Каждая необходима, но их логика часто противоречит друг другу: быстрый результат — долгосрочному развитию, порядок — переменам. Поэтому все четыре не могут сочетаться в одном человеке и <b>идеального лидера, сильного во всех четырёх, не существует</b>. Сильной бывает только команда.</p>'+
+    '<h3>Как проходить</h3>'+
+    '<ul>'+
+      '<li>20 вопросов, в каждом — 4 утверждения.</li>'+
+      '<li>Нажимайте на утверждения <b>по порядку</b>: сначала то, что больше всего похоже на вас, затем следующее. Последнее отметится само.</li>'+
+      '<li>Отвечайте, как вы <b>действительно</b> ведёте себя в учёбе и проектах, а не как «правильно».</li>'+
+      '<li>Около 10 минут. Работает без интернета, ответы никуда не отправляются.</li>'+
+    '</ul>'+
+  '</div>';
+  navin.innerHTML='<button class="btn block" id="go">Начать</button>';
+  document.getElementById("go").onclick=function(){ state.step=0; render(); };
+}
+
+/* ---------- экран: вопрос ---------- */
+function renderItem(){
+  var i=state.step, it=ITEMS[i], r=state.ranks[i];
+  var labels=["больше всего похоже на меня","скорее похоже","меньше похоже","меньше всего похоже на меня"];
+  var html=
+  '<div class="top"><div class="meta"><span>Вопрос '+(i+1)+' из '+ITEMS.length+'</span><span>'+Math.round(i/ITEMS.length*100)+'%</span></div>'+
+  '<div class="progress"><div style="width:'+(i/ITEMS.length*100)+'%"></div></div></div>'+
+  '<h2>'+esc(it.q)+'</h2>'+
+  '<p class="hint">'+(r.length===0?'Нажмите на то, что <b>больше всего</b> похоже на вас.':
+     (r.length<4?'Теперь следующее по степени сходства.':'Готово. Чтобы изменить порядок, нажмите на любое утверждение.'))+'</p>';
+  it.s.forEach(function(st,j){
+    var pos=r.indexOf(j);
+    html+='<button class="opt'+(pos>=0?' r'+(pos+1):'')+'" data-j="'+j+'">'+
+      '<span class="badge">'+(pos>=0?(pos+1):'')+'</span>'+
+      '<span class="txt">'+esc(st[1])+(pos>=0?'<span class="lbl">'+labels[pos]+'</span>':'')+'</span></button>';
+  });
+  if(r.length>0) html+='<button class="reset" id="rst">Сбросить порядок</button>';
+  app.innerHTML=html;
+
+  app.querySelectorAll(".opt").forEach(function(b){
+    b.onclick=function(){
+      var j=+b.dataset.j, pos=r.indexOf(j);
+      if(pos>=0){ r.splice(pos); }          // снять это и все последующие места
+      else { r.push(j); if(r.length===3){ for(var k=0;k<4;k++){ if(r.indexOf(k)<0){ r.push(k); break; } } } }
+      renderItem();
+    };
+  });
+  var rst=document.getElementById("rst"); if(rst) rst.onclick=function(){ state.ranks[i]=[]; renderItem(); };
+
+  navin.innerHTML='<button class="btn ghost" id="back" aria-label="Назад">←</button>'+
+    '<button class="btn" id="next"'+(done(i)?'':' disabled')+'>'+(i===ITEMS.length-1?'Узнать результат':'Далее')+'</button>';
+  document.getElementById("back").onclick=function(){ state.step--; render(); };
+  document.getElementById("next").onclick=function(){ if(done(i)){ state.step++; render(); } };
+}
+
+/* ---------- подсчёт ---------- */
+function scores(){
+  var sc={P:0,A:0,E:0,I:0};
+  ITEMS.forEach(function(it,i){ state.ranks[i].forEach(function(j,pos){ sc[it.s[j][0]]+=W[pos]; }); });
+  return sc;
+}
+function letter(r,v){ return v>=HIGH ? r : (v>LOW ? r.toLowerCase() : "-"); }
+
+function interpret(sc){
+  var caps=ORDER.filter(function(r){return sc[r]>=HIGH;});
+  var dashes=ORDER.filter(function(r){return sc[r]<=LOW;});
+  var sorted=ORDER.slice().sort(function(x,y){return sc[y]-sc[x];});
+  var h="", t="";
+  if(caps.length===1 && dashes.length===3){
+    var m=MIS[caps[0]];
+    h="Ярко выраженный "+ROLES[caps[0]].name.toLowerCase();
+    t="Одна функция у вас доминирует, остальные почти не проявлены. В крайней форме Адизес называет такой стиль «"+m.name+"» ("+m.code+"). Это не приговор, а зона риска: с людьми других стилей у вас, скорее всего, будет больше напряжения. Ниже — где именно и как превратить его в пользу.";
+  } else if(caps.length===1){
+    h="Ваш ведущий стиль — "+ROLES[caps[0]].name;
+    t = dashes.length===0
+      ? "Одна функция выражена сильно, остальные присутствуют. По Адизесу, это и есть реалистичный хороший лидер: сильная сторона без «прочерков» — вы способны понимать людей с другими стилями и работать с ними."
+      : "Одна функция выражена сильно, но "+(dashes.length===1?"функция "+dashes[0]+" почти не проявлена":"функции "+dashes.join(" и ")+" почти не проявлены")+". Это нормально — никто не силён во всём. Но с людьми, для которых эти функции ведущие, вам будет сложнее найти общий язык. Ниже — где возможен конфликт и как его решать.";
+  } else if(caps.length>=2){
+    h="Двойной профиль: "+caps.map(function(r){return ROLES[r].name;}).join(" + ");
+    t="У вас две сильные функции, и в разных ситуациях на первый план будет выходить то одна, то другая. С людьми других стилей возможны разногласия — ниже о том, как сделать их полезными.";
+  } else {
+    h="Ровный профиль, ведущий стиль не выражен";
+    t="Вы расставляли утверждения без явного перевеса. Это может означать гибкость — Адизес пишет, что люди многогранны: «Я (P), когда мою машину, (A), когда работаю в офисе…». А может значить, что вы отвечали про разные ситуации. Попробуйте пройти тест ещё раз, представляя один конкретный проект. Чуть сильнее остальных у вас: "+ROLES[sorted[0]].name+".";
+  }
+  return {caps:caps,dashes:dashes,sorted:sorted,h:h,t:t};
+}
+
+/* ---------- экран: результат ---------- */
+function renderResult(){
+  var sc=scores(), it=interpret(sc);
+  var code=ORDER.map(function(r){return letter(r,sc[r]);});
+  var top=it.sorted[0], low=it.sorted[3], R=ROLES[top];
+
+  var html=
+  '<div class="card">'+
+    '<p class="muted small" style="margin:0">Ваш код по Адизесу</p>'+
+    '<div class="code">'+code.map(function(c,k){return '<span style="color:'+(c==="-"?"var(--muted)":ROLES[ORDER[k]].color)+'">'+c+'</span>';}).join("")+'</div>'+
+    '<h2 style="margin-bottom:6px">'+esc(it.h)+'</h2>'+
+    '<p>'+esc(it.t)+'</p>'+
+    '<div class="bars">'+ORDER.map(function(r){
+      var pct=(sc[r]-MIN)/(MAX-MIN)*100, avg=(AVG-MIN)/(MAX-MIN)*100;
+      return '<div class="bar"><div class="top2"><span><b style="color:'+ROLES[r].color+'">'+r+'</b> · '+ROLES[r].name+'</span><b>'+sc[r]+'</b></div>'+
+        '<div class="track"><div class="fill" style="width:'+pct+'%;background:'+ROLES[r].color+'"></div>'+
+        '<div class="mark" style="left:'+avg+'%"></div></div></div>';
+    }).join("")+'</div>'+
+    '<p class="src" style="margin-top:10px">Баллы по функции — от 20 до 160, в среднем 75 (черта на шкале). Код в нотации Адизеса: заглавная буква — функция выражена сильно (от '+HIGH+'), строчная — присутствует, «-» — почти не проявлена (50 и ниже).</p>'+
+  '</div>';
+
+  /* Матрица */
+  function cell(r){
+    var s=sc[r]>=HIGH;
+    return '<div class="c" style="'+(s?'border-color:'+ROLES[r].color:'')+'"><b style="color:'+ROLES[r].color+'">'+r+'</b> '+ROLES[r].name+
+      '<div class="muted" style="font-size:12px">'+ROLES[r].q+'</div></div>';
+  }
+  html+='<div class="card"><h2>Зачем нужны все четыре функции</h2>'+
+    '<p class="small muted">По Адизесу, цель управления — сделать организацию результативной и эффективной в краткосрочной и долгосрочной перспективе. Каждая функция отвечает за свой сектор.</p>'+
+    '<div class="matrix">'+
+      '<div class="h">Результативность</div><div class="h">Эффективность</div>'+
+      '<div class="row">Краткосрочно · сейчас</div>'+cell("P")+cell("A")+
+      '<div class="row">Долгосрочно · в будущем</div>'+cell("E")+cell("I")+
+    '</div></div>';
+
+  /* Сильная функция */
+  html+='<div class="card"><h2>Ваша сильная сторона</h2>'+
+    '<div class="role" style="border-color:'+R.color+'">'+
+      '<h3><span style="color:'+R.color+'">'+top+'</span> — '+R.name+' <span class="muted" style="font-weight:400">('+R.en+')</span></h3>'+
+      '<p>'+R.func+'</p>'+
+      '<p class="small"><span class="muted">Главный вопрос:</span> '+R.q+'<br><span class="muted">Типичная жалоба:</span> '+R.complaint+'</p>'+
+      '<b>Что вы даёте команде</b><ul>'+R.plus.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ul>'+
+      '<b>Где можете мешать</b><ul>'+R.minus.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ul>'+
+      '<p class="small" style="margin:0"><span class="muted">Зона риска:</span> если остальные функции «обнулятся», получится <b>'+MIS[top].name+'</b> ('+MIS[top].code+'). '+MIS[top].text+'</p>'+
+    '</div>';
+  if(it.caps.length>=2){
+    var s2=it.sorted[1], R2=ROLES[s2];
+    html+='<div class="role" style="border-color:'+R2.color+'"><h3><span style="color:'+R2.color+'">'+s2+'</span> — '+R2.name+'</h3>'+
+      '<p style="margin:0">'+R2.func+'</p></div>';
+  }
+  html+='</div>';
+
+  /* Конфликты */
+  var others=ORDER.filter(function(r){return r!==top;}).sort(function(x,y){return sc[x]-sc[y];});
+  html+='<div class="card"><h2>С кем возможен конфликт</h2>'+
+    '<p class="small muted">Разные взгляды — это нормально. Напряжение между стилями становится источником новых идей, если с ним работать. Вот как ваш стиль <b style="color:'+R.color+'">'+top+'</b> может сталкиваться с остальными.</p>'+
+    others.map(function(o,k){
+      var c=conflictOf(top,o), O=ROLES[o];
+      return '<div class="cf'+(k===0?' main':'')+'">'+
+        (k===0?'<span class="tag">Самое вероятное напряжение</span><br>':'')+
+        '<span class="ltr" style="background:'+R.color+'">'+top+'</span> ⚡ <span class="ltr" style="background:'+O.color+'">'+o+'</span>'+
+        '<h3>'+c.t+'</h3>'+
+        '<p class="small muted" style="margin:0 0 6px">'+c.d+'</p>'+
+        '<div class="ln mn"><i>−</i><span>'+c[top]+'</span></div>'+
+        '<div class="ln mn"><i>−</i><span>'+c[o]+'</span></div>'+
+        '<div class="ln pl"><i>+</i><span><b>Вместе:</b> '+c.w+'.</span></div>'+
+        '<p class="small" style="margin:8px 0 0"><span class="muted">Как договориться с '+o+':</span> '+O.talk+'</p>'+
+        '<div class="qt">«'+c.q+'»</div>'+
+      '</div>';
+    }).join("")+
+    '<div class="how"><b>Конструктивный конфликт делает команду сильнее</b><ul>'+
+      '<li>Дайте высказаться разным точкам зрения.</li>'+
+      '<li>Ищите решение, которое объединяет сильные стороны.</li>'+
+      '<li>Используйте разногласия как источник лучших идей.</li>'+
+    '</ul></div>'+
+  '</div>';
+
+  /* Критика */
+  html+='<div class="card"><h2>Как относиться к результату</h2><ul>'+
+    '<li><b>Стиль зависит от ситуации.</b> У каждого есть склонность, но проявляемся мы по-разному в разных контекстах. Код описывает поведение, а не личность.</li>'+
+    '<li><b>Сам Адизес скептичен к тестам.</b> Он называет тестирование «административным, механистическим методом» и советует узнавать стиль человека, наблюдая за ним и общаясь.</li>'+
+    '<li><b>Социально одобряемые ответы.</b> Мы выбираем то, как хотим выглядеть, а не то, как действуем. Сравните результат с мнением тех, с кем вы работали.</li>'+
+    '<li><b>Баллы относительны.</b> При ранжировании сумма фиксирована: высокий балл по одной функции автоматически снижает другие. Тест показывает соотношение ваших склонностей, а не их абсолютную силу.</li>'+
+    '<li><b>Эффект Барнума.</b> Описания стилей узнаваемы почти для каждого. Смотрите на соотношение баллов, а не только на текст.</li>'+
+  '</ul>'+
+  '<p class="src" style="margin:0">Учебная адаптация, не официальный Adizes Management Style Indicator. Формат (20 вопросов, ранжирование с весами 8/4/2/1) повторяет официальный опросник; пороги кода — учебные. Содержание — по книге И. Адизеса «Идеальный руководитель» (2004).</p></div>';
+
+  html+='<div class="noprint" style="display:flex;gap:10px;flex-wrap:wrap">'+
+    '<button class="btn ghost" id="again" style="flex:1">Пройти заново</button>'+
+    '<button class="btn ghost" id="print" style="flex:1">Сохранить PDF</button></div>';
+
+  app.innerHTML=html;
+  window.scrollTo(0,0);
+  setTimeout(sparkle,150);
+
+  var line="Мой код по Адизесу: "+code.join("")+" (P "+sc.P+" · A "+sc.A+" · E "+sc.E+" · I "+sc.I+")";
+  navin.innerHTML='<button class="btn block" id="copy">Скопировать код</button>';
+  document.getElementById("copy").onclick=function(){ copyText(line); };
+  document.getElementById("print").onclick=function(){ window.print(); };
+  document.getElementById("again").onclick=function(){
+    state.ranks=ITEMS.map(function(){return [];}); state.step=-1; render();
+  };
+}
+
+/* ---------- блёстки на экране результата ---------- */
+function sparkle(){
+  try{ if(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return; }catch(e){}
+  var cv=document.createElement("canvas");
+  cv.setAttribute("aria-hidden","true");
+  cv.style.cssText="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9";
+  document.body.appendChild(cv);
+  var ctx=cv.getContext("2d"), dpr=Math.min(window.devicePixelRatio||1,2);
+  var W=window.innerWidth, H=window.innerHeight;
+  cv.width=W*dpr; cv.height=H*dpr; ctx.scale(dpr,dpr);
+  var cs=getComputedStyle(document.documentElement);
+  var cols=["--P","--A","--E","--I"].map(function(v){return cs.getPropertyValue(v).trim()||"#c98e00";});
+  cols.push("#f2c14e","#ffd86b");
+  var codeEl=document.querySelector(".code"), r=codeEl?codeEl.getBoundingClientRect():{left:W/2,top:H/4,width:0,height:0};
+  var ox=r.left+Math.min(r.width,200)/2, oy=r.top+r.height/2;
+  var parts=[], N=W<500?70:110;
+  for(var i=0;i<N;i++){
+    var a=Math.random()*Math.PI*2, sp=2+Math.random()*6;
+    parts.push({x:ox,y:oy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-3,s:3+Math.random()*6,
+      c:cols[(Math.random()*cols.length)|0],rot:Math.random()*Math.PI,vr:(Math.random()-.5)*.2,
+      tw:Math.random()*Math.PI*2,life:0,max:90+Math.random()*60,delay:(Math.random()*12)|0});
+  }
+  /* мягкий дождь сверху */
+  for(var k=0;k<(W<500?30:50);k++){
+    parts.push({x:Math.random()*W,y:-20-Math.random()*H*.4,vx:(Math.random()-.5)*.6,vy:1+Math.random()*1.5,s:2+Math.random()*4,
+      c:cols[(Math.random()*cols.length)|0],rot:0,vr:.03,tw:Math.random()*6,life:0,max:140+Math.random()*60,delay:(Math.random()*40)|0,rain:1});
+  }
+  function star(x,y,s,rot){
+    ctx.save(); ctx.translate(x,y); ctx.rotate(rot); ctx.beginPath();
+    for(var j=0;j<8;j++){ var rr=j%2?s*.28:s, an=j*Math.PI/4; ctx.lineTo(Math.cos(an)*rr,Math.sin(an)*rr); }
+    ctx.closePath(); ctx.fill(); ctx.restore();
+  }
+  var frame=0;
+  function tick(){
+    frame++; ctx.clearRect(0,0,W,H); var alive=0;
+    parts.forEach(function(p){
+      if(p.delay>0){p.delay--; alive++; return;}
+      if(p.life>p.max) return;
+      p.life++; alive++;
+      if(!p.rain){ p.vx*=.97; p.vy=p.vy*.97+.12; } else { p.x+=Math.sin((p.life+p.tw*10)/15)*.4; }
+      p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; p.tw+=.25;
+      var fade=1-p.life/p.max, flick=.55+.45*Math.sin(p.tw);
+      ctx.globalAlpha=Math.max(0,fade*flick); ctx.fillStyle=p.c;
+      star(p.x,p.y,p.s*(.7+.3*flick),p.rot);
+    });
+    if(alive>0 && frame<400) requestAnimationFrame(tick); else cv.remove();
+  }
+  requestAnimationFrame(tick);
+}
+
+function copyText(t){
+  function fallback(){
+    var ta=document.createElement("textarea"); ta.value=t; ta.setAttribute("readonly",""); ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0,t.length);
+    var ok=false; try{ ok=document.execCommand("copy"); }catch(e){}
+    document.body.removeChild(ta); toast(ok?"Скопировано":t);
+  }
+  try{
+    if(navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(t).then(function(){toast("Скопировано");},fallback); }
+    else fallback();
+  }catch(e){ fallback(); }
+}
+function toast(msg){
+  var el=document.getElementById("toast"); el.textContent=msg; el.classList.add("on");
+  clearTimeout(toast._t); toast._t=setTimeout(function(){el.classList.remove("on");},2400);
+}
+
+function render(){
+  if(state.step<0) renderIntro();
+  else if(state.step<ITEMS.length){ renderItem(); window.scrollTo(0,0); }
+  else renderResult();
+}
+render();
+})();
+</script>
+</body>
+</html>
